@@ -1,0 +1,35 @@
+name: Sanity test 
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  test_model:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+      - uses: iterative/setup-cml@v2
+      - name: run train program
+        run: |
+          pip install -r requirements.txt
+          python train.py
+      - name: Create CML report
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "## 📊 IRIS Poisoning Report" > report.md
+          echo "" >> report.md
+          echo "This report contains the validation accuracy under different poisoning levels." >> report.md
+          echo "" >> report.md
+          echo "### 📈 Accuracy vs Poison Level" >> report.md
+          echo "![Poisoning Plot](poisoning_plot.png)" >> report.md
+          echo "" >> report.md
+          echo "### 🔢 CSV Output" >> report.md
+          echo '```csv' >> report.md
+          cat iris_poisoning_results.csv >> report.md
+          echo '```' >> report.md
+          cml comment create --publish report.md
