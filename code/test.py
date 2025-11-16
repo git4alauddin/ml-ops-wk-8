@@ -10,7 +10,7 @@ class TestModel(unittest.TestCase):
 
     def setUp(self):
 
-        self.restored_model = joblib.load("model.weights.h5")
+        self.restored_model = joblib.load("model/model.weights.h5")
     
     def test_sample1(self):
         sample = pd.DataFrame([[4.6,3.1,1.5,0.2]],
